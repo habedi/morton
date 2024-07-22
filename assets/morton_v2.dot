@@ -1,0 +1,79 @@
+digraph Morton {
+    node [shape = rect, style = filled, margin = "0.2"];
+
+    // Input nodes
+    subgraph cluster_inputs {
+    label = "Input";
+    labelloc = "t";
+    labeljust = "l";
+    style = filled;
+    color = azure2;
+
+    x_in [label = "x: 1010", shape = rect, color = lightgreen, fontcolor = black];
+    y_in [label = "y: 1101", shape = rect, color = lightgoldenrod1, fontcolor = black];
+    }
+
+    // Encoding process
+    subgraph cluster_encoding {
+    label = "Encoding";
+    labelloc = "t";
+    labeljust = "l";
+    style = filled;
+    color = lavender;
+
+    interleave [label = "Interleaving", shape = ellipse, color = lightskyblue1, fontcolor = black];
+
+    // Grouping interleaved bits for clarity
+        x_bits [label = "z0 = x0:1, z2 = x1:0, z4 = x2:1, z6 = x3:0", shape = rect, color = lightgreen, fontcolor = black];
+    y_bits [label = "z1 = y0:1, z3 = y1:1, z5 = y2:0, z7 = y3:1", shape = rect, color = lightgoldenrod1, fontcolor = black];
+    }
+
+    // Morton code result
+    morton [label = "z: 11101001 (Morton Code)", shape = rect, style = filled, color = lemonchiffon, margin = "0.3", fontcolor = black];
+
+    // Decoding process
+    subgraph cluster_decoding {
+    label = "Decoding";
+    labelloc = "t";
+    labeljust = "l";
+    style = filled;
+    color = lavender;
+
+    deinterleave [label = "Deinterleaving", shape = ellipse, color = lightskyblue1, fontcolor = black];
+
+    // Grouping deinterleaved bits for clarity
+        x_bits_dec [label = "x0 = z0:1, x1 = z2:0, x2 = z4:1, x3 = z6:0", shape = rect, color = lightgreen, fontcolor = black];
+    y_bits_dec [label = "y0 = z1:1, y1 = z3:1, y2 = z5:0, y3 = z7:1", shape = rect, color = lightgoldenrod1, fontcolor = black];
+    }
+
+    // Outputs
+    x_out [label = "x: 1010", shape = rect, color = lightgreen, fontcolor = black];
+    y_out [label = "y: 1101", shape = rect, color = lightgoldenrod1, fontcolor = black];
+
+    // Edges for input to encoding
+    x_in -> interleave;
+    y_in -> interleave;
+
+    // Interleave process to binary digits
+    interleave -> x_bits;
+    interleave -> y_bits;
+
+    // Binary digits to Morton code
+    x_bits -> morton;
+    y_bits -> morton;
+
+    // Morton code to decoding process
+    morton -> deinterleave;
+
+    // Deinterleaving process to binary digits
+    deinterleave -> x_bits_dec;
+    deinterleave -> y_bits_dec;
+
+    // Binary digits to output
+    x_bits_dec -> x_out;
+    y_bits_dec -> y_out;
+
+    // Rank settings for improved visualization
+    {rank = same; x_in; y_in;}
+    {rank = same; x_out; y_out;}
+}
